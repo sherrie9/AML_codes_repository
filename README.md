@@ -51,6 +51,33 @@ Supervised automated gating is to customize codes for gating strategy provided f
 
 ## Results + Findings
 
+* **Finding 1**: No significant differences in cell proportions between relapsed vs. non-relapsed patients in both supervised (9 populations, below) and unsupervised analysis (6561 populations, not shown).
 
+![cell_counts_image](https://github.com/sherrie9/AML_codes_repository/blob/master/Plots/cell_counts.PNG)
 
+* **Finding 2**: When we overlap the differences between relapsed patients with normal and the differences between non-relapsed patients with normal. There are cell populations with proportions that are only different in relapsed patients when compared to normal. We can then opitimize these markers so that each population is represented by minimal number of markers but still retain their significance.
+
+![optim_image](https://github.com/sherrie9/AML_codes_repository/blob/master/Plots/overlap.PNG)
+
+We need to validate these populations as they are gated by unsuperivsed methods, which sometimes, don't agree with intuition or our knowledge. For example, we don't want any gating lines that cut through a middle of populations.   
+
+![valid_image](https://github.com/sherrie9/AML_codes_repository/blob/master/Plots/validation.PNG)
+
+Looks like all the populations are legitimate. The gating lines properly seperated targeted populations in the red boxes.
+
+A small portion of the resulting populations with their associated p-values are:
+
+![valid_image](https://github.com/sherrie9/AML_codes_repository/blob/master/Plots/pops.PNG)
+
+* **Finding 3**: Significantly different linear models between relapsed vs. non-relapsed patients are observed in some populations, p-values here indicate the significance of slope differences:
+
+![valid_image](https://github.com/sherrie9/AML_codes_repository/blob/master/Plots/lmodels.PNG)
+
+|cell popluation|p-value|
+|---------------|-------|
+|a) CD13+CD34+CD33-CD11B+|0.0035|
+|b) CD36-CD34+CD117-|0.0024|
+|c)CD15-NG2+CD34+CD2-|0.00028|
+|d)CD96+CD34-CD38-HLADR-|0.017|
+|e)CD34+CD117-HLADR-|0.0018|
 
