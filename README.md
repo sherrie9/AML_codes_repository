@@ -27,8 +27,30 @@ The original data did not contain the same number of samples per group, roughly 
 |Tube4 |ditto |ditto                        |ditto                        |ditto|
 |Tube5 |ditto |ditto                        |ditto                        |ditto|
 
-## Data preprocessing:
+## Study Design:
+1. Identify significantly different cell populations at each time points for relapsed, non-relapsed and normal cohorts.
+2. Identify cell populations with different regeneration trends over time between relapsed and non-relapsed patients.
+
+## Methods:
+
+### Data preprocessing:
 Preprocessing involves data cleaning and data integration. Data was collected from different medical centers. Although each center tried to follow the same naming conventions for marker names and dye names and time points names, there were still minor differences that prevent them from being properly integrated. In [preprocess.R](https://github.com/sherrie9/AML_codes_repository/blob/master/preprocess.R), I changed names so that they are all consistent. At this point, each tube has one single integrated dataset containing 140 samples (sum of each row in the above table). Tubes cannot be integrated together because they contain different markers. Different combinations of markers require different analysis strategy as we will see later. 
+
+Flow cytometry data requires compensation and transformation. Detailed steps are in [gating_preFaust_pretSne.R](https://github.com/sherrie9/AML_codes_repository/blob/master/gating_preFaust_pretSne.R). Inside this code, I also removed technical outlier data using [flowCut](https://github.com/jmeskas/flowCut), and removed dead cells and doublets.
+
+### Cell Population Identification
+
+Supervised automated gating is to customize codes for gating strategy provided for each tube. In [code_automatedGating.R](https://github.com/sherrie9/AML_codes_repository/blob/master/code_automatedGating.R), I wrote the code that produced the supervised gating. In code [gating_preFaust_pretSne.R], I wrote steps for doing the unsupervised analysis. The clustering of CD45+SSC- cells are using k means clustering implemented by flowPeak package. However, the resulting grouping requires human supervision and proper regroup and organization. 
+
+![gating_image](https://github.com/sherrie9/AML_codes_repository/blob/master/Plots/gating.PNG)
+
+### Biomarker Discovery
+1. In code [flowType_pvalue.R](https://github.com/sherrie9/AML_codes_repository/blob/master/flowType_pvalue.R), I did pairwise t-test of 3^8 = 6561 (8 markers) cell populations from each tube for three cohorts; selecting populations with adjusted p value <0.05; In code [flowType-RchyOptimyx.R](https://github.com/sherrie9/AML_codes_repository/blob/master/flowType-Rchyoptimyx.R), I did marker optimization. This method corresponds to study design 1.
+
+2. In code [regeneration_dynamics.R](https://github.com/sherrie9/AML_codes_repository/blob/master/regeneration_dynamics.R), I computed p value for difference in linear regression fitted to time series data for relapsed and non-relapsed patients. This corresponds to study design 2. 
+
+## Results + Findings
+
 
 
 
