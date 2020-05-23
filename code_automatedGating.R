@@ -40,9 +40,7 @@ all.gthres <- list()
 #---------------------tube 1 gating----------------------------------------------
 
 tube1fcs <- store.allFCS.AML.normal[which(store.allFCS.AML.normal$Tube =="001"),]
-# patients <- unique(tube1fcs$PatientID) #don't do patients[14] ==13201700010, transformation is wrong
 scatter_chans <- c("FSC-A","FSC-H","SSC-A")
-# tubes <- c("001","002","003","004","005","006","007","008")
 days <- c("Day22","last before 2nd ind","last before cons", "Normal")
 
 tubes <- c("001")
@@ -69,11 +67,18 @@ for(d in 2:length(days)){
                markers_list[grep(paste("CD117|CD117BC",collapse = "|"),names(markers_list))])
     gate1 <- deGate(f,chans[1],upper= TRUE, use.upper = T, tinypeak.removal = 0.1,alpha = 0.01)
     
-
+    # if(gate1 > 2.5+0.5){
+    #   if(center=="karolinska"){
+    #     gate1 <- 3.2
+    #   }else{
+    #     gate1 <- 2.5
+    #   }
+    # }
+  
     temp <- flowDensity(f,chans, position = c(F,NA), gates= c(gate1,NA))
 
     rot <- rotate.data(getflowFrame(temp),chans,theta=0.18)$data
-
+    # rot <- rotate.data(f,chans,theta=0.18)$data
     
     gate <- deGate(rot,chans[2],upper= TRUE, use.upper = T, tinypeak.removal = 0.01,alpha = 0.01)
     gate2 <- deGate(rot,chans[2],upper= TRUE, use.upper = T, tinypeak.removal = 0.01,alpha = 0.9)
@@ -90,7 +95,7 @@ for(d in 2:length(days)){
         gate <- 3.3
       }
     
-    if(f@description$`EXPERIMENT NAME` == "****"){
+    if(f@description$`EXPERIMENT NAME` == "******"){
       gate = deGate(rot,chans[2],upper= TRUE, use.upper = T, tinypeak.removal = 0.01,alpha = 0.05)
       gate <- gate
       }
@@ -98,7 +103,7 @@ for(d in 2:length(days)){
     flowD <- flowDensity(rot,chans,position = c(NA,T), gates= c(NA,gate))
     flowD@flow.frame <- rotate.data(flowD@flow.frame,chans,theta=-0.18)$data
     
-  
+ 
     flowD@filter <- rotate.data(flowD@filter,chans, theta=-0.18)$data
  
     if(flowD@cell.count <=1){
@@ -154,8 +159,6 @@ for(d in 2:length(days)){
     return(ft)
   })
   
-
-   
   #===============================gating CD13+B CD33- =========================================
   cd13posbcd33neg.flowD <- llply(as(singlets.fs, Class = "list"), function(f){
     
@@ -169,7 +172,7 @@ for(d in 2:length(days)){
     
     
     gate <- deGate(rot,chans[2],upper = F, tinypeak.removal = 0.0001)
-    # gate <- deGate(rot,chans[2],upper = F, tinypeak.removal = 0.001,use.upper = T)
+   
     
     if(abs(2.9-abs(gate)) > 0.5){
       if(identifier(f)=="10"){
@@ -193,17 +196,12 @@ for(d in 2:length(days)){
       temp@flow.frame <- rotate.data(getflowFrame(temp), chans,theta = -1.2)$data
       
     temp2 <- flowDensity(temp,chans,position = c(NA,F), gate=c(NA,2.5))
-    
 
-    
-    # gate1 <- deGate(f,chans[1], tinypeak.removal = 0.01, upper = T,use.upper = T)
     return(temp2)
   }, .parallel=T)
   
   cd13posbcd33neg.fs <- flowSet(lapply(cd13posbcd33neg.flowD, function(fD){getflowFrame(fD)}))
-  # cd13posbcd33neg.flowD1 <- fsApply(cd13posbcd33neg.fs,function(f){
-  #   
-  # })
+
   par(mfrow=c(2,3))
   chans <- c(markers_list["CD13"],markers_list["CD33"])
   a <- lapply(1:length(cd13posbcd33neg.fs), function(x){
@@ -219,7 +217,6 @@ for(d in 2:length(days)){
     return(ft)
   })
   
-  # names(all.gthres[[2]]) <- rep(paste0("CD33CD13.filter"),length(hladrmastcell.flowD))
   
   #=============================gate CD45-/CD45+D cells=======================================
   
@@ -242,7 +239,9 @@ for(d in 2:length(days)){
         xmax <- dens$x[which.max(dens$y)]
         if(gate < xmax){
           gate <- deGate(f,chans[1],upper = T,use.upper=T)
-     
+          # if(gate==-Inf){
+          #   gate <- 1000000
+          # }
         }
       }
       
@@ -293,7 +292,8 @@ for(d in 2:length(days)){
       gate <- 100000
     }
    
-
+    # plot(density(na.omit(f@exprs[,chans[2]])))
+    # plot(density(na.omit(f@exprs[,chans[1]])))
     gate1 <- deGate(f,chans[1],upper = T,use.upper = T, tinypeak.removal = 0.01,alpha = 0.9)
     if(gate1==-Inf){
       gate1 <- 100000
@@ -427,7 +427,7 @@ for(d in 2:length(days)){
         return(temp3)
       }
     }, .parallel=T)
-  # }
+
 
   
   
@@ -466,11 +466,7 @@ for(d in 2:length(days)){
         gate <- mean(f@exprs[,chans[2]])
       }
     }
-    # if(gate < 0.5){
-    #   peak.cd56 <- getPeaks(f,chans[2])
-    #   sd.cd56 <- sd(f@exprs[,chans[2]])
-    #   gate <- peak.cd56$Peaks + sd.cd56
-    # }
+  
     flowD <- flowDensity(f,chans,position=c(NA,T),gates= c(NA,gate))
     
   
@@ -510,9 +506,7 @@ for(d in 2:length(days)){
 
     if(gate1 > 150000){
       gate1 <- 100000
-      # if(center == "karolinska"){
-      #   gate1 <- 150000
-      # }
+    
     }
     if(gate1 <30000){
       gate1 <- gate
@@ -550,7 +544,7 @@ for(d in 2:length(days)){
   all.gthres[[7]] <- llply(as(sscpos.flowD,Class="list"), function(fD){
     
     ft <- fD$sscpos.flowD@gates[2]
-    # colnames(ft) <- c(channel_names[chans[1]], channel_names[chans[2]])
+   
     
     return(ft)
   })
@@ -577,6 +571,9 @@ for(d in 2:length(days)){
         gate1 <- 2.5
       }
     }
+    # if(gate1 > 2.5){
+    #   gate1 <- 2.5
+    # }
     if(gate1==-Inf){
       gate1 <- 2.5
     }
@@ -632,7 +629,6 @@ for(d in 2:length(days)){
         plotDens(f,chans,pch=20)
         lines(res@filter)
       }
-      
       
     
       
@@ -706,6 +702,7 @@ for(d in 2:length(days)){
       lines(singlets.flowD[[idx]]@filter,type="l",lwd=2)
     }
     
+
     
     
     plotDens(singlets.fs[[idx]],c(markers_list[grep(paste("HLA-DR|HLADR", collapse = "|"),names(markers_list))],markers_list[grep(paste("CD117|CD117BC",collapse = "|"),names(markers_list))]),main=paste0("Singlets: "),
@@ -814,7 +811,6 @@ for(d in 2:length(days)){
   }
   
   cell.counts <- cbind(cell.counts,lv2)
-  # save(cell.counts,file=paste0("~/results/Summary/AutomatedGating/Patient_",unique(cell.counts$PatientID),"_Tube",unique(cell.counts$Tube)[1],"_cellcounts.RData"))
 
   save(cell.counts,file=paste0("~/results/Summary/AutomatedGating/Tube",tubes,days[d],"cellcounts.RData"))
   
