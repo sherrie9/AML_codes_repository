@@ -83,7 +83,7 @@ for(t in 2:length(tubes)){
   fs <- fsApply(fs,function(f) removeMargins(f,chans = scat.chans, verbose = T))
   
   fs <- fsApply(fs, function(f) removeMargins(f,chans = scat.chans,debris = T, neg = T, verbose = T))
-  
+  se
   fs <- fsApply(fs, function(f) compensate(f,f@description$SPILL))
   
   gf <- globalFrame(fs)
@@ -346,7 +346,7 @@ for(t in 2:length(tubes)){
           flowPeaks.Res <- flowPeaks(ff@exprs[,chans], tol = 0.06, h0=0.5,h=1.1)
         } 
         if(t==5 && days[d]=="last before cons" &&
-           (basename(f@description$FILENAME)=="13201300004_25130928_d22post2ndind_13201300004_25130928_d22post2ndind_Tube_005.fcs" |
+           (basename(f@description$FILENAME)=="***.fcs" |          #names removed
            basename(f@description$FILENAME) == "resample_7.fcs" |
            basename(f@description$FILENAME) =="resample_15.fcs")){
           min.cid <- flowPeaks.Res$peaks$cid[intersect(which(flowPeaks.Res$peaks$mu[,1] < 1),
