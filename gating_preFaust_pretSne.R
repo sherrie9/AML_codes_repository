@@ -84,10 +84,10 @@ for(t in 2:length(tubes)){
   
   fs <- fsApply(fs, function(f) removeMargins(f,chans = scat.chans,debris = T, neg = T, verbose = T))
   
-  fs <- fsApply(fs, function(f) compensate(f,f@description$SPILL))
+  fs <- fsApply(fs, function(f) compensate(f,f@description$SPILL)) #compensation
   
-  gf <- globalFrame(fs)
-  lgl <- gf$lgl
+  gf <- globalFrame(fs)   #transformation using globalframe
+  lgl <- gf$lgl           #lgl transformation
   
   fs <- fsApply(fs, function(f) transform(f, lgl))
   
